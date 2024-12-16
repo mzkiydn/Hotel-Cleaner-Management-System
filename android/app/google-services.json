@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "930444596504",
+    "project_id": "hcms-sep-bddc3",
+    "storage_bucket": "hcms-sep-bddc3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930444596504:android:36bab7b3d2b5bc90e77a6d",
+        "android_client_info": {
+          "package_name": "com.example.hcms_sep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAssO8om2XkfXtGn9bG1bh8tyfteCmnBmY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
