@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/report', //nanti tukar home
+      initialRoute: '/login', //nanti tukar home
       routes: Routes.routes,
     );
   }
