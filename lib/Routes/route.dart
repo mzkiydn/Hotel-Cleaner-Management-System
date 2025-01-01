@@ -10,7 +10,7 @@ import 'package:hcms_sep/Views/Activity/bookingRescheduleView.dart';
 
 class Routes {
   static final Map<String, WidgetBuilder> routes = {
-  
+    '/login': (context) => LoginInterface(),
     '/report': (context) => ReportView(),
     '/activity': (context) => ActivityListView(),
     '/update': (context) => const ActivityUpdateView(),
