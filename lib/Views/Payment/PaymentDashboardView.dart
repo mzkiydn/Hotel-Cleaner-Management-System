@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hcms_sep/Views/Payment/PaymentScreen.dart';
-
 
 void main() {
   runApp(const CheckoutBooking());
@@ -36,10 +36,11 @@ class _CreateBookingScreenState extends State<CreateBookingScreen> {
 
   int get totalPayment => _selectedHours * _selectedCleaners * _ratePerHourPerCleaner;
 
-String formatDate(DateTime date) {
+  String formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
+  // Pick date
   Future<void> _pickDate() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -54,6 +55,7 @@ String formatDate(DateTime date) {
     }
   }
 
+  // Pick time
   Future<void> _pickTime() async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -63,6 +65,31 @@ String formatDate(DateTime date) {
       setState(() {
         _selectedTime = pickedTime;
       });
+    }
+  }
+
+  // Save booking data to Firestore
+  Future<void> _saveBooking() async {
+    final bookingData = {
+      'address': _addressController.text,
+      'date': formatDate(_selectedDate!),
+      'time': _selectedTime!.format(context),
+      'hours': _selectedHours,
+      'cleaners': _selectedCleaners,
+      'totalPayment': totalPayment,
+    };
+
+    try {
+      await FirebaseFirestore.instance.collection('bookings').add(bookingData);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking saved to database!')),
+      );
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving booking!')),
+      );
     }
   }
 
@@ -168,8 +195,8 @@ String formatDate(DateTime date) {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Handle proceed action
+              onPressed: () async {
+                // Validation
                 if (_addressController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please enter an address.')),
@@ -182,34 +209,34 @@ String formatDate(DateTime date) {
                   );
                   return;
                 }
-                // Proceed with the booking
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Booking successful!')),
-                );
+
+                // Save booking data to Firestore
+                await _saveBooking();
 
                 // Simulated payment URL from your backend or payment gateway
-            String paymentUrl = "https://example.com/payment";
+                String paymentUrl = "https://example.com/payment";
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                builder: (context) => PaymentScreen(paymentUrl: paymentUrl),
-                ),
+                // Navigate to the PaymentScreen
+                Navigator.push(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentScreen(paymentUrl: paymentUrl),
+                  ),
                 ).then((result) {
-                // Handle the result of the payment
-                if (result == 'success') {
+                  // Handle the result of the payment
+                  if (result == 'success') {
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Payment Successful!')),
+                      const SnackBar(content: Text('Payment Successful!')),
                     );
-                } else if (result == 'failed') {
+                  } else if (result == 'failed') {
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Payment Failed!')),
+                      const SnackBar(content: Text('Payment Failed!')),
                     );
-                }
+                  }
                 });
-
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
