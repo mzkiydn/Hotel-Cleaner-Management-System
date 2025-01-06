@@ -7,14 +7,24 @@ class ReportController {
     String? userId = prefs.getString('userId');
 
     if (userId == null) {
-      return {'username': 'Unknown'};
+      return {'username': 'Unknown', 'sessionId': 'Unknown'};
     }
 
-    // Fetch username from Firestore
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    String username = userDoc.exists ? userDoc.get('username') : 'Unknown';
+    // Fetch username from Firestore using userId
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    return {'username': username};
+      if (userDoc.exists) {
+        String username = userDoc.get('username') ?? 'Unknown';
+        // Optionally fetch session details here if available in Firestore.
+        return {'username': username, 'sessionId': userId}; // Returning userId as sessionId
+      } else {
+        return {'username': 'Unknown', 'sessionId': 'Unknown'};
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+      return {'username': 'Unknown', 'sessionId': 'Unknown'};
+    }
   }
 
   List<Map<String, String>> getReports() {
@@ -25,3 +35,4 @@ class ReportController {
     ];
   }
 }
+

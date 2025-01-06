@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class BaseScaffold extends StatelessWidget {
+class BaseScaffold extends StatefulWidget {
   final Widget body;
   final int currentIndex;
   final ValueChanged<int>? onItemTapped;
@@ -9,16 +10,27 @@ class BaseScaffold extends StatelessWidget {
   final String customBarTitle;
   final bool showBottomNavigationBar;
 
-  BaseScaffold({
+  const BaseScaffold({
     Key? key,
     required this.body,
     required this.currentIndex,
     required this.onItemTapped,
-    this.leftCustomBarAction, // Initialize left button
-    this.rightCustomBarAction, // Initialize right button
-    this.customBarTitle = " ", // Default title if none provided
+    this.leftCustomBarAction,
+    this.rightCustomBarAction,
+    this.customBarTitle = " ",
     this.showBottomNavigationBar = true,
   }) : super(key: key);
+
+  @override
+  _BaseScaffoldState createState() => _BaseScaffoldState();
+}
+
+class _BaseScaffoldState extends State<BaseScaffold> {
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userId');  // Removes the 'userId' key from SharedPreferences
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);  // Navigate to the login screen
+  }
 
   void _handleNavigation(BuildContext context, int index) {
     if (index == 0) {
@@ -30,58 +42,48 @@ class BaseScaffold extends StatelessWidget {
     } else if (index == 3) {
       Navigator.pushNamed(context, '/report');
     } else if (index == 4) {
-      Navigator.pushNamed(context, '/profile');
-      // } else if (onItemTapped != null) {
-      //   // Handle other navigation normally
-      //   onItemTapped!(index);
+      _logout();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //AppBar
+      // AppBar
       appBar: AppBar(
-        // the top of the app
-          automaticallyImplyLeading: false, // Remove back button
-          title: Text('Homestay Cleaning'),
-          backgroundColor: Colors.deepPurple,
+        automaticallyImplyLeading: false, // Remove back button
+        title: Text('Homestay Cleaning'),
+        backgroundColor: Colors.deepPurple,
       ),
 
-      //customBar
+      // Custom Bar
       body: Column(
         children: [
-          // Custom bar with left and right actions
           Container(
             color: Colors.blueGrey,
             padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Display left action if provided, else empty space
-                leftCustomBarAction ?? SizedBox.shrink(),
-
+                widget.leftCustomBarAction ?? SizedBox.shrink(),
                 Text(
-                  customBarTitle, // Display dynamic title
+                  widget.customBarTitle,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                // Display right action if provided, else empty space
-                rightCustomBarAction ?? SizedBox.shrink(),
+                widget.rightCustomBarAction ?? SizedBox.shrink(),
               ],
             ),
           ),
-          // Main content
-          Expanded(child: body),
+          Expanded(child: widget.body),
         ],
       ),
 
-      //NavBar
-      bottomNavigationBar: showBottomNavigationBar
+      // Bottom Navigation Bar
+      bottomNavigationBar: widget.showBottomNavigationBar
           ? BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -110,10 +112,11 @@ class BaseScaffold extends StatelessWidget {
             backgroundColor: Colors.deepPurpleAccent,
           ),
         ],
-        currentIndex: currentIndex,
+        currentIndex: widget.currentIndex,
         selectedItemColor: Colors.amber[800],
         onTap: (index) => _handleNavigation(context, index),
-      ) : null,
+      )
+          : null,
     );
   }
 }

@@ -27,8 +27,6 @@ class _ReportViewState extends State<ReportView> {
     });
   }
 
-   ReportView({super.key});
-
   @override
   Widget build(BuildContext context) {
     final reports = _reportController.getReports();

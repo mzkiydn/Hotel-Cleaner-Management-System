@@ -9,6 +9,7 @@ plugins {
 dependencies {
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:33.7.0')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 
     // TODO: Add the dependencies for Firebase products you want to use

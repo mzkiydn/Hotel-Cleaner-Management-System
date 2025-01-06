@@ -23,15 +23,20 @@ class LoginController {
         // Check if the account is active
         if (userData['status'] == 'active') {
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('userId', userCredential.user?.uid ?? 'No user');
+          String userId = userCredential.user?.uid ?? '';
+          if (userId.isNotEmpty) {
+            await prefs.setString('userId', userId);
 
-          // Check the user's role and perform corresponding logic
-          if (userData['role'] == 'Cleaner') {
-            // Handle logic for Cleaner
-            // return 'Cleaner login successful';
-          } else if (userData['role'] == 'HouseOwner') {
-            // Handle logic for HouseOwner
-            // return 'HouseOwner login successful';
+            // Check the user's role and perform corresponding logic
+            if (userData['role'] == 'Cleaner') {
+              // Handle logic for Cleaner
+              // You can return or set specific logic based on role if needed
+            } else if (userData['role'] == 'HouseOwner') {
+              // Handle logic for HouseOwner
+            }
+            return null;  // No errors
+          } else {
+            return 'User ID is missing';
           }
         } else {
           return 'User account is not active';
@@ -52,3 +57,4 @@ class LoginController {
     }
   }
 }
+
