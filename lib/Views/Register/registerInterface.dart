@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hcms_sep/Provider/RegisterController.dart';
 
 class RegisterInterface extends StatefulWidget {
+  const RegisterInterface({super.key});
+
   @override
   _RegisterInterfaceState createState() => _RegisterInterfaceState();
 }
@@ -14,7 +17,7 @@ class _RegisterInterfaceState extends State<RegisterInterface> {
   final _passwordController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _addressController = TextEditingController();
-  String _role = 'Cleaner'; // Default role
+  String _role = 'Cleaner';
 
   final List<String> roles = ['Cleaner', 'HouseOwner'];
 

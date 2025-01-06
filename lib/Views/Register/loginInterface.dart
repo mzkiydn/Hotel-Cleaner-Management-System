@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:hcms_sep/Provider/LoginController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginInterface extends StatefulWidget {
+  const LoginInterface({super.key});
+
   @override
   _LoginInterfaceState createState() => _LoginInterfaceState();
 }
@@ -25,7 +28,7 @@ class _LoginInterfaceState extends State<LoginInterface> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userId');
     if (userId != null) {
-      Navigator.pushNamed(context, '/report'); // Navigate to the main page
+      Navigator.pushNamed(context, '/report');
     }
   }
 

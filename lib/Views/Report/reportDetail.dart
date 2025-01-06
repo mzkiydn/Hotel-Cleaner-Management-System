@@ -5,7 +5,7 @@ import 'package:hcms_sep/baseScaffold.dart';
 class ReportDetail extends StatefulWidget {
   final Map<String, String> report;
 
-  const ReportDetail({Key? key, required this.report}) : super(key: key);
+  const ReportDetail({super.key, required this.report});
 
   @override
   _ReportDetailState createState() => _ReportDetailState();

@@ -22,6 +22,7 @@ class _ReportViewState extends State<ReportView> {
   Future<void> _fetchSessionDetails() async {
     Map<String, String> details = await _reportController.getSessionDetails();
     setState(() {
+      sessionId = details['sessionId']!;
       username = details['username']!;
     });
   }
@@ -31,7 +32,7 @@ class _ReportViewState extends State<ReportView> {
     final reports = _reportController.getReports();
 
     return BaseScaffold(
-      customBarTitle: '$username',
+      customBarTitle: 'Username: $username',
       body: ListView.separated(
         padding: const EdgeInsets.all(16.0),
         itemCount: reports.length,

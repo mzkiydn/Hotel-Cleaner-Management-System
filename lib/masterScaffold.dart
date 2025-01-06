@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'baseScaffold.dart';
 
 class MasterScaffold extends StatefulWidget {
+  const MasterScaffold({super.key});
+
   @override
   _MasterScaffoldState createState() => _MasterScaffoldState();
 }
