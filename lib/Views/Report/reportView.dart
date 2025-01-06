@@ -9,6 +9,8 @@ class ReportView extends StatelessWidget {
     {"homestay": "Sky Hive", "date": "05/11/2024"},
   ];
 
+   ReportView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(

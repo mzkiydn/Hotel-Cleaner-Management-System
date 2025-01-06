@@ -4,14 +4,14 @@ import 'package:hcms_sep/baseScaffold.dart';
 class ReportDetail extends StatelessWidget {
   final Map<String, String> report;
 
-  const ReportDetail({Key? key, required this.report}) : super(key: key);
+  const ReportDetail({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       customBarTitle: (report['homestay'] ?? 'Report Details'),
       leftCustomBarAction: IconButton(
-        icon: Icon(Icons.arrow_left, color: Colors.white),
+        icon: const Icon(Icons.arrow_left, color: Colors.white),
         onPressed: () {
           Navigator.pushNamed(context, '/report');
         },

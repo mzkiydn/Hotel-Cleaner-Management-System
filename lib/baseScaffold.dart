@@ -9,8 +9,8 @@ class BaseScaffold extends StatelessWidget {
   final String customBarTitle;
   final bool showBottomNavigationBar;
 
-  BaseScaffold({
-    Key? key,
+  const BaseScaffold({
+    super.key,
     required this.body,
     required this.currentIndex,
     required this.onItemTapped,
@@ -18,7 +18,7 @@ class BaseScaffold extends StatelessWidget {
     this.rightCustomBarAction, // Initialize right button
     this.customBarTitle = " ", // Default title if none provided
     this.showBottomNavigationBar = true,
-  }) : super(key: key);
+  });
 
   void _handleNavigation(BuildContext context, int index) {
     if (index == 0) {
@@ -44,7 +44,7 @@ class BaseScaffold extends StatelessWidget {
       appBar: AppBar(
         // the top of the app
           automaticallyImplyLeading: false, // Remove back button
-          title: Text('Homestay Cleaning'),
+          title: const Text('Homestay Cleaning'),
           backgroundColor: Colors.deepPurple,
       ),
 
@@ -59,11 +59,11 @@ class BaseScaffold extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Display left action if provided, else empty space
-                leftCustomBarAction ?? SizedBox.shrink(),
+                leftCustomBarAction ?? const SizedBox.shrink(),
 
                 Text(
                   customBarTitle, // Display dynamic title
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class BaseScaffold extends StatelessWidget {
                 ),
 
                 // Display right action if provided, else empty space
-                rightCustomBarAction ?? SizedBox.shrink(),
+                rightCustomBarAction ?? const SizedBox.shrink(),
               ],
             ),
           ),

@@ -3,25 +3,23 @@ import 'package:firebase_core/firebase_core.dart';
 import 'Routes/route.dart';
 import 'firebase_options.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // This will use the platform-specific options
-  );
-  runApp(MyApp());
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+
+  runApp(const MyApp());
 }
 
-// easily create by type 'stless'
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login', //nanti tukar home
+      initialRoute: '/login', 
       routes: Routes.routes,
     );
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ActivityListView extends StatelessWidget {
+  const ActivityListView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Activity')),
+      appBar: AppBar(title: const Text('Activity')),
       body: ListView(
         children: [
           _buildActivityCard(
@@ -40,14 +42,14 @@ class ActivityListView extends StatelessWidget {
     bool reschedule = false,
   }) {
     return Card(
-      margin: EdgeInsets.all(12),
+      margin: const EdgeInsets.all(12),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
+            Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
             Text('Owner: $owner'),
             Text('Cleaner: $cleaner'),
             Text('Date: $date'),
@@ -59,7 +61,7 @@ class ActivityListView extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, '/reschedule');
                   },
-                  child: Text('Reschedule'),
+                  child: const Text('Reschedule'),
                 ),
               ),
           ],
@@ -70,7 +72,7 @@ class ActivityListView extends StatelessWidget {
 
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
-      items: [
+      items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Activities'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),

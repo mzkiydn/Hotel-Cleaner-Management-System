@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:hcms_sep/Provider/RegisterController.dart';
 
 class RegisterInterface extends StatefulWidget {
+  const RegisterInterface({super.key});
+
   @override
   _RegisterInterfaceState createState() => _RegisterInterfaceState();
 }
