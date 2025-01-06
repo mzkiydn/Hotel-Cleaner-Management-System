@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget body;
@@ -9,13 +8,6 @@ class BaseScaffold extends StatelessWidget {
   final Widget? rightCustomBarAction;
   final String customBarTitle;
   final bool showBottomNavigationBar;
-
-  void logout(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-  }
-
 
   BaseScaffold({
     Key? key,
@@ -38,7 +30,7 @@ class BaseScaffold extends StatelessWidget {
     } else if (index == 3) {
       Navigator.pushNamed(context, '/report');
     } else if (index == 4) {
-      logout(context);
+      Navigator.pushNamed(context, '/profile');
       // } else if (onItemTapped != null) {
       //   // Handle other navigation normally
       //   onItemTapped!(index);
