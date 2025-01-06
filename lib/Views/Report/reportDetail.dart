@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:hcms_sep/Provider/ReportController.dart';
 import 'package:hcms_sep/baseScaffold.dart';
 
-class ReportDetail extends StatelessWidget {
+class ReportDetail extends StatefulWidget {
   final Map<String, String> report;
 
   const ReportDetail({Key? key, required this.report}) : super(key: key);
 
   @override
+  _ReportDetailState createState() => _ReportDetailState();
+}
+
+class _ReportDetailState extends State<ReportDetail> {
+  final ReportController _reportController = ReportController();
+  String sessionId = 'Loading...';
+  String username = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSessionDetails();
+  }
+
+  Future<void> _fetchSessionDetails() async {
+    Map<String, String> details = await _reportController.getSessionDetails();
+    setState(() {
+      sessionId = details['sessionId']!;
+      username = details['username']!;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      customBarTitle: (report['homestay'] ?? 'Report Details'),
+      customBarTitle: (widget.report['homestay'] ?? 'Report Details'),
       leftCustomBarAction: IconButton(
-        icon: Icon(Icons.arrow_left, color: Colors.white),
+        icon: const Icon(Icons.arrow_left, color: Colors.white),
         onPressed: () {
           Navigator.pushNamed(context, '/report');
         },
@@ -21,10 +45,10 @@ class ReportDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Homestay: ${report['homestay']}',
+            Text('Homestay: ${widget.report['homestay']}',
                 style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
-            Text('Date: ${report['date']}',
+            Text('Date: ${widget.report['date']}',
                 style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
             const Center(
@@ -33,9 +57,7 @@ class ReportDetail extends StatelessWidget {
           ],
         ),
       ),
-      //selectedNavbar
       currentIndex: 3,
-      // Set this based on the desired initial tab
       onItemTapped: (index) {
         // Handle bottom navigation actions if needed
       },

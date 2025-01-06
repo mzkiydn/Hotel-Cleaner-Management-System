@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,6 +22,9 @@ class LoginController {
 
         // Check if the account is active
         if (userData['status'] == 'active') {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userId', userCredential.user?.uid ?? 'No user');
+
           // Check the user's role and perform corresponding logic
           if (userData['role'] == 'Cleaner') {
             // Handle logic for Cleaner

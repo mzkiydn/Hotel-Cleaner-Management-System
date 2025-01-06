@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hcms_sep/Provider/LoginController.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginInterface extends StatefulWidget {
   @override
@@ -13,6 +14,25 @@ class _LoginInterfaceState extends State<LoginInterface> {
   bool isLoading = false;
 
   final LoginController controller = LoginController();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  void _checkSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    if (userId != null) {
+      Navigator.pushNamed(context, '/report'); // Navigate to the main page
+    }
+  }
+
+  Future<void> _storeSession(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+  }
 
   @override
   Widget build(BuildContext context) {

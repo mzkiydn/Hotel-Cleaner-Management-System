@@ -44,7 +44,6 @@ class RegisterController {
           'address': address,
           'role': 'HouseOwner',
           'status': 'active',  // Example of additional field
-          'propertyList': [],  // HouseOwner-specific field
         });
       } else {
         return 'Invalid role selected.';

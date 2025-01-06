@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:hcms_sep/Provider/ReportController.dart';
 import 'package:hcms_sep/baseScaffold.dart';
 import 'reportDetail.dart';
 
-class ReportView extends StatelessWidget {
-  final List<Map<String, String>> reports = [
-    {"homestay": "Vintage House", "date": "10/12/2024"},
-    {"homestay": "SunShine House", "date": "07/11/2024"},
-    {"homestay": "Sky Hive", "date": "05/11/2024"},
-  ];
+class ReportView extends StatefulWidget {
+  @override
+  _ReportViewState createState() => _ReportViewState();
+}
+
+class _ReportViewState extends State<ReportView> {
+  final ReportController _reportController = ReportController();
+  String sessionId = 'Loading...';
+  String username = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSessionDetails();
+  }
+
+  Future<void> _fetchSessionDetails() async {
+    Map<String, String> details = await _reportController.getSessionDetails();
+    setState(() {
+      username = details['username']!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final reports = _reportController.getReports();
+
     return BaseScaffold(
+      customBarTitle: '$username',
       body: ListView.separated(
         padding: const EdgeInsets.all(16.0),
         itemCount: reports.length,
@@ -23,8 +43,7 @@ class ReportView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      ReportDetail(report: reports[index]),
+                  builder: (context) => ReportDetail(report: reports[index]),
                 ),
               );
             },
@@ -32,9 +51,7 @@ class ReportView extends StatelessWidget {
         },
         separatorBuilder: (_, __) => const Divider(),
       ),
-      //selectedNavbar
       currentIndex: 3,
-      // Set this based on the desired initial tab
       onItemTapped: (index) {
         // Handle bottom navigation actions if needed
       },
