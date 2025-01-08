@@ -5,8 +5,9 @@ import 'package:hcms_sep/Views/Register/registerInterface.dart';
 import 'package:hcms_sep/Views/Report/reportView.dart';
 import 'package:hcms_sep/Views/Activity/activityListView.dart';
 import 'package:hcms_sep/Views/Activity/activityUpdateView.dart';
-import 'package:hcms_sep/Views/Activity/bookingListView.dart';
+//import 'package:hcms_sep/Views/Activity/bookingListView.dart';
 import 'package:hcms_sep/Views/Activity/bookingRescheduleView.dart';
+import 'package:hcms_sep/Views/Booking/BookingForm.dart';
 
 class Routes {
   static final Map<String, WidgetBuilder> routes = {
@@ -15,8 +16,9 @@ class Routes {
     '/report': (context) => ReportView(),
     '/activity': (context) => const ActivityListView(),
     '/update': (context) => const ActivityUpdateView(),
-    '/bookings': (context) => const BookingListView(),
+    '/booking': (context) => const BookingForm(),
     '/reschedule': (context) => const BookingRescheduleView(),
-    '/homeregister': (context) => HomestayRegistration(), // Default route for homestay registration
+    '/homeregister': (context) =>
+        HomestayRegistration(), // Default route for homestay registration
   };
 }
