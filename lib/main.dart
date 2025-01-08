@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hcms_sep/stripe_service.dart';
 import 'Routes/route.dart';
 import 'firebase_options.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  StripeService.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform, // This will use the platform-specific options
   );
