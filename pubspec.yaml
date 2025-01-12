@@ -40,6 +40,8 @@ dependencies:
   firebase_auth: 5.3.4
   shared_preferences: ^2.3.3
   webview_flutter: ^4.8.0
+  printing: ^5.13.4
+  pdf: ^3.11.1
 
 
 

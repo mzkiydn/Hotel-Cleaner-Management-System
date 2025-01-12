@@ -16,7 +16,7 @@ class HouseOwner {
     required this.password,
     required this.phoneNumber,
     required this.address,
-    this.role = 'HouseOwner',
+    this.role = 'House Owner',
   });
 
   // Convert HouseOwner object to Firestore format (Map)

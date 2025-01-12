@@ -15,23 +15,23 @@ class LoginController {
       );
 
       // Fetch user data from Firestore
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userCredential.user?.uid).get();
+      DocumentSnapshot userDoc = await _firestore.collection('User').doc(userCredential.user?.uid).get();
 
       if (userDoc.exists) {
         var userData = userDoc.data() as Map<String, dynamic>;
 
         // Check if the account is active
-        if (userData['status'] == 'active') {
+        if (userData['Status'] == 'active') {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           String userId = userCredential.user?.uid ?? '';
           if (userId.isNotEmpty) {
             await prefs.setString('userId', userId);
 
             // Check the user's role and perform corresponding logic
-            if (userData['role'] == 'Cleaner') {
+            if (userData['Role'] == 'Cleaner') {
               // Handle logic for Cleaner
               // You can return or set specific logic based on role if needed
-            } else if (userData['role'] == 'HouseOwner') {
+            } else if (userData['Role'] == 'House Owner') {
               // Handle logic for HouseOwner
             }
             return null;  // No errors
