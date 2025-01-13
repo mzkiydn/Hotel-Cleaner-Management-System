@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hcms_sep/Domain/Report.dart';
 import 'package:hcms_sep/Provider/ReportController.dart';
 import 'package:hcms_sep/Views/Report/reportPreview.dart';
 import 'package:hcms_sep/baseScaffold.dart';
 
 class ReportDetail extends StatefulWidget {
-  final Map<String, String> report;
+  final Report report;
 
   const ReportDetail({super.key, required this.report});
 
@@ -17,6 +18,7 @@ class _ReportDetailState extends State<ReportDetail> {
   String sessionId = 'Loading...';
   String username = 'Loading...';
   Map<String, dynamic> homestayDetails = {};
+  Map<String, dynamic> bookingDetails = {};
   bool isLoading = true;
 
   @override
@@ -35,33 +37,37 @@ class _ReportDetailState extends State<ReportDetail> {
     });
   }
 
-  // homestay details
+  // homestay and booking details
   Future<void> _fetchHomestayDetails() async {
     setState(() {
       isLoading = true;
     });
 
-    // Fetch homestay details using the report's 'houseName' or 'bookingId'
-    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report['bookingId']!);
+    // Fetch homestay details using the report's 'homestayId'
+    Map<String, dynamic> booking = await _reportController.getHomestay(widget.report.homestayId);
+
+    // Fetch homestay details using the report's 'homestayId'
+    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report.homestayId);
     setState(() {
       homestayDetails = homestay;
+      bookingDetails = booking;
       isLoading = false;
     });
+
   }
 
   // change status
   Future<void> _approveReport() async {
-    await _reportController.updateBookingStatusToApproved(widget.report['bookingId']!);
+    await _reportController.updateBookingStatusToApproved(widget.report.bookingId);
     Navigator.pop(context);
   }
 
   // Navigate to Print Preview screen
   void _printReport() {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => ReportPreview(report: widget.report),
-      ),
+      '/reportPreview',
+      arguments: widget.report,
     );
   }
 
@@ -72,7 +78,7 @@ class _ReportDetailState extends State<ReportDetail> {
     }
 
     return BaseScaffold(
-      customBarTitle: widget.report['houseName'] ?? 'Report Details',
+      customBarTitle: homestayDetails['houseName'] ?? 'Report Details',  // Access houseName correctly
       leftCustomBarAction: IconButton(
         icon: const Icon(Icons.arrow_left, color: Colors.white),
         onPressed: () {
@@ -85,11 +91,11 @@ class _ReportDetailState extends State<ReportDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // House name and session date
-            Text('Homestay: ${widget.report['houseName']}', style: const TextStyle(fontSize: 18)),
+            Text('Homestay: ${homestayDetails['houseName']}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
-            Text('Date: ${widget.report['sessionDate']}', style: const TextStyle(fontSize: 18)),
+            Text('Date: ${widget.report.sessionDate}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
-            Text('Status: ${widget.report['status']}', style: const TextStyle(fontSize: 18)),
+            Text('Status: ${bookingDetails['bookingStatus']}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
 
             // House description
@@ -120,7 +126,7 @@ class _ReportDetailState extends State<ReportDetail> {
             ),
 
             // Approve button
-            if (widget.report['status'] == 'Completed')
+            if (bookingDetails['bookingStatus'] == 'Completed')  // Access status correctly
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
@@ -130,7 +136,7 @@ class _ReportDetailState extends State<ReportDetail> {
               ),
 
             // Print button for approved reports
-            if (widget.report['status'] == 'Approved')
+            if (bookingDetails['bookingStatus'] == 'Approved' || bookingDetails['bookingStatus'] == 'Paid')  // Access status correctly
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(

@@ -1,4 +1,5 @@
 import 'package:hcms_sep/Domain/Booking.dart';
+import 'package:hcms_sep/Domain/Report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -34,12 +35,13 @@ class ReportController {
     }
   }
 
-  // bookings with status "Completed"
-  Future<List<Map<String, String>>> getBookingsNeedingApproval() async {
+  // Get bookings needing approval
+  Future<List<Report>> getBookingsNeedingApproval() async {
     String userId = await _getUserId();
 
     if (userId.isEmpty) {
-      return []; // Return empty list if userId is not found
+      print('No Booking Made Yet');
+      return []; // Return an empty list
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
@@ -48,15 +50,21 @@ class ReportController {
         .where('userId', isEqualTo: userId)
         .get();
 
+    if (booking.docs.isEmpty) {
+      print('No Booking Made Yet');
+      return []; // Return an empty list
+    }
+
     return _processBookings(booking);
   }
 
-  //  bookings with status "Approved"
-  Future<List<Map<String, String>>> getApprovedBookings() async {
+  // Get approved bookings
+  Future<List<Report>> getApprovedBookings() async {
     String userId = await _getUserId();
 
     if (userId.isEmpty) {
-      return []; // Return empty list if userId is not found
+      print('No userId');
+      return [];
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
@@ -65,34 +73,59 @@ class ReportController {
         .where('userId', isEqualTo: userId)
         .get();
 
+    if (booking.docs.isEmpty) {
+      print('No Booking ');
+      return [];
+    }
+
     return _processBookings(booking);
   }
 
-  //  bookings and homestay details
-  Future<List<Map<String, String>>> _processBookings(QuerySnapshot booking) async {
-    List<Map<String, String>> homestayDetailsList = [];
+  // Process the bookings to get homestay details and create report entries
+  Future<List<Report>> _processBookings(QuerySnapshot booking) async {
+    print('Processing bookings...'); // Debug statement
+    List<Report> reportList = [];
 
     for (var doc in booking.docs) {
       Map<String, dynamic> bookingData = doc.data() as Map<String, dynamic>;
+      print('Booking data: $bookingData'); // Debug statement
+
       final homestayDetails = await getHomestay(bookingData['homestayId']);
+      print('Homestay details: $homestayDetails'); // Debug statement
 
       if (homestayDetails.isNotEmpty) {
         String activities = homestayDetails['activities'].values
-            .expand((activityList) => activityList)
+            .expand((activityList) => (activityList as List<dynamic>).cast<String>())
             .join(", ");
 
-        homestayDetailsList.add({
-          "bookingId": bookingData['bookingId'],
-          "houseName": homestayDetails['houseName'],
-          "sessionDate": bookingData['sessionDate'],
-          "activities": activities,
-        });
+        Report report = Report(
+          userId: bookingData['userId'],
+          cleanerId: bookingData['cleanerId'],
+          homestayId: bookingData['homestayId'],
+          bookingId: bookingData['bookingId'],
+          sessionDate: bookingData['sessionDate'],
+          price: (bookingData['price'] as num).toDouble(), // Convert price to double
+          activities: activities,
+          rooms: homestayDetails['rooms'].length,
+          description: 'Session Date: ${bookingData['sessionDate']}\n'
+              'Price: \$${bookingData['price']}\n'
+              'Activities: $activities\n'
+              'Rooms: ${homestayDetails['rooms'].length} rooms\n'
+              'User ID: ${bookingData['userId']}\n'
+              'Cleaner ID: ${bookingData['cleanerId']}\n'
+              'Booking ID: ${bookingData['bookingId']}\n'
+              'Homestay ID: ${bookingData['homestayId']}',
+        );
+
+        reportList.add(report);
+        await createReport(report);
       }
     }
-    return homestayDetailsList;
+    print('Total reports processed: ${reportList.length}'); // Debug statement
+    return reportList;
   }
 
-  // homestay details by homestayId
+  // Get homestay details by homestayId
   Future<Map<String, dynamic>> getHomestay(String homestayId) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('homestays')
@@ -111,15 +144,44 @@ class ReportController {
       }
 
       return {
-        "houseName": data['houseName'],
+
+        "houseName": data['houseName'] ?? 'Unknown Homestay', // Ensure houseName is included
         "activities": activitiesByRoom,
+        "rooms": rooms,
       };
     } else {
       return {}; // Return an empty map if homestay not found
     }
   }
 
-  // Update booking status
+  // Get homestay details by homestayId
+  Future<Map<String, dynamic>> getBooking(String bookingId) async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('bookings')
+        .doc(bookingId)
+        .get();
+
+    if (snapshot.exists) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      return {
+        "bookingStatus": data['bookingStatus'] ?? 'Unknown status',
+      };
+    } else {
+      return {}; // Return an empty map if homestay not found
+    }
+  }
+
+  // Create a new report entry in Firestore
+  Future<void> createReport(Report report) async {
+    try {
+      await FirebaseFirestore.instance.collection('Report').add(report.toMap());
+      print('Report created successfully');
+    } catch (e) {
+      print('Error creating report: $e');
+    }
+  }
+
+  // Update booking status to approved
   Future<void> updateBookingStatusToApproved(String bookingId) async {
     try {
       await FirebaseFirestore.instance.collection('bookings').doc(bookingId).update({
@@ -131,3 +193,4 @@ class ReportController {
     }
   }
 }
+

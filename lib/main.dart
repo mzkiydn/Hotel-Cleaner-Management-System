@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      onGenerateRoute: Routes.generateRoute,  // Use the custom route generator
       initialRoute: '/login',
-      routes: Routes.routes,
     );
   }
 }

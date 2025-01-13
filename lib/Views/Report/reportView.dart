@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hcms_sep/Domain/Report.dart';
 import 'package:hcms_sep/Provider/ReportController.dart';
 import 'package:hcms_sep/baseScaffold.dart';
-
 
 class ReportView extends StatefulWidget {
   @override
@@ -12,8 +12,8 @@ class _ReportViewState extends State<ReportView> {
   final ReportController _reportController = ReportController();
   String sessionId = 'Loading...';
   String username = 'Loading...';
-  List<Map<String, String>> reportsNeedingApproval = [];
-  List<Map<String, String>> approvedReports = [];
+  List<Report> reportsNeedingApproval = [];
+  List<Report> approvedReports = [];
 
   @override
   void initState() {
@@ -31,12 +31,22 @@ class _ReportViewState extends State<ReportView> {
   }
 
   Future<void> _fetchReports() async {
-    List<Map<String, String>> needingApproval = await _reportController.getBookingsNeedingApproval();
-    List<Map<String, String>> approved = await _reportController.getApprovedBookings();
-    setState(() {
-      reportsNeedingApproval = needingApproval;
-      approvedReports = approved;
-    });
+    try {
+      print('Fetching reports needing approval...'); // Debug statement
+      List<Report> needingApproval = await _reportController.getBookingsNeedingApproval();
+      print('Reports needing approval: ${needingApproval.length}'); // Debug statement
+
+      print('Fetching approved reports...'); // Debug statement
+      List<Report> approved = await _reportController.getApprovedBookings();
+      print('Approved reports: ${approved.length}'); // Debug statement
+
+      setState(() {
+        reportsNeedingApproval = needingApproval;
+        approvedReports = approved;
+      });
+    } catch (e) {
+      print('Error fetching reports: $e'); // Debug statement
+    }
   }
 
   @override
@@ -48,6 +58,7 @@ class _ReportViewState extends State<ReportView> {
           children: [
             _buildSectionTitle("Needing Approval"),
             _buildReportList(reportsNeedingApproval),
+
             _buildSectionTitle("Approved"),
             _buildReportList(approvedReports),
           ],
@@ -70,28 +81,49 @@ class _ReportViewState extends State<ReportView> {
     );
   }
 
-  Widget _buildReportList(List<Map<String, String>> reports) {
+  Widget _buildReportList(List<Report> reports) {
     return ListView.separated(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16.0),
       itemCount: reports.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(reports[index]["houseName"]!),
-          trailing: Text(reports[index]["sessionDate"]!),
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/reportDetail', // Define this route in the Routes class
-              arguments: reports[index],
-            );
+        final report = reports[index];
 
+        return FutureBuilder<Map<String, dynamic>>(
+          future: _reportController.getHomestay(report.homestayId), // Use the controller to fetch homestay details
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              print('Loading homestay details for report...'); // Debug statement
+              return ListTile(
+                title: Text('Loading...'),
+                trailing: Text(report.sessionDate),
+              );
+            } else if (snapshot.hasError) {
+              print('Error loading homestay details: ${snapshot.error}'); // Debug statement
+              return ListTile(
+                title: Text('Error loading homestay name'),
+                trailing: Text(report.sessionDate),
+              );
+            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              String homestayName = snapshot.data!['houseName'] ?? 'Unknown Homestay';
+              return ListTile(
+                title: Text(homestayName),
+                subtitle: Text(report.description),
+                trailing: Text(report.sessionDate),
+              );
+            } else {
+              return ListTile(
+                title: Text('No Homestay Found'),
+                trailing: Text(report.sessionDate),
+              );
+            }
           },
         );
       },
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (context, index) {
+        return Divider();
+      },
     );
   }
-
 }

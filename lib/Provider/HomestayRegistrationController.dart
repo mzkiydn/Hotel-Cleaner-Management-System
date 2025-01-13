@@ -19,7 +19,7 @@ class HomestayRegistrationController {
     rooms[index] = {'roomType': roomType, 'activities': activities};
     debugPrint('Room updated: $roomType with activities: $activities');
   }
-
+//IGy4fwAzb4Rn6XpcTVVJqHb5I2s1
   void removeRoom(int index) {
     rooms.removeAt(index);
     debugPrint('Room removed at index: $index');
