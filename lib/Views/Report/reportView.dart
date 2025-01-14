@@ -99,7 +99,7 @@ class _ReportViewState extends State<ReportView> {
                 trailing: Text(report.sessionDate),
               );
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              String homestayName = snapshot.data!['houseName'] ?? 'Unknown Homestay';
+              String homestayName = snapshot.data!['House Name'] ?? 'Unknown Homestay';
               return ListTile(
                 title: Text(homestayName),
                 trailing: Text(report.sessionDate),

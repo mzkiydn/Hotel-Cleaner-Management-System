@@ -105,11 +105,11 @@ class ReportController {
           sessionDate: bookingData['sessionDate'],
           price: (bookingData['price'] as num).toDouble(), // Convert price to double
           activities: activities,
-          rooms: homestayDetails['rooms']?.length ?? 0, // Default to 0 if rooms is null
+          rooms: homestayDetails['Rooms']?.length ?? 0, // Default to 0 if rooms is null
           description: 'Session Date: ${bookingData['sessionDate']}\n'
               'Price: \$${bookingData['price']}\n'
               'Activities: $activities\n'
-              'Rooms: ${homestayDetails['rooms']?.length ?? 0} rooms\n'
+              'Rooms: ${homestayDetails['Rooms']?.length ?? 0} Rooms\n'
               'User ID: ${bookingData['userId']}\n'
               'Cleaner ID: ${bookingData['cleanerId']}\n'
               'Booking ID: ${bookingData['bookingId']}\n'
@@ -133,7 +133,7 @@ class ReportController {
 
     if (snapshot.exists) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      List<dynamic> rooms = data['rooms'] ?? [];
+      List<dynamic> rooms = data['Rooms'] ?? [];
 
       Map<String, List<String>> activitiesByRoom = {};
       for (var room in rooms) {
@@ -142,9 +142,10 @@ class ReportController {
         activitiesByRoom[roomType] = activities;
       }
       return {
-        "houseName": data['houseName'] ?? 'Unknown Homestay', // Ensure houseName is included
+        "House Name": data['House Name'] ?? 'Unknown Homestay',
+        "House Type": data['House Type'] ?? 'Unknown Type',
         "activities": activitiesByRoom,
-        "rooms": rooms,
+        "Rooms": rooms,
       };
 
     } else {

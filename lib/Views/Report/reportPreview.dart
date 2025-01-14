@@ -47,7 +47,7 @@ class _ReportPreviewState extends State<ReportPreview> {
         return pw.Column(
           children: [
             // Access the homestay name and other details
-            pw.Text('Homestay: ${homestayDetails['houseName'] ?? 'Unknown'}',
+            pw.Text('Homestay: ${homestayDetails['House Name'] ?? 'Unknown'}',
                 style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 10),
             pw.Text('Date: ${widget.report.sessionDate ?? 'Unknown'}',
@@ -57,7 +57,7 @@ class _ReportPreviewState extends State<ReportPreview> {
             pw.SizedBox(height: 20),
             pw.Text('House Description:',
                 style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
-            pw.Text('Number of rooms: ${homestayDetails['rooms']?.length ?? 0}',
+            pw.Text('Number of rooms: ${homestayDetails['Rooms']?.length ?? 0}',
                 style: pw.TextStyle(fontSize: 16)),
             pw.SizedBox(height: 10),
             pw.Text('Room Details and Activities:',
@@ -65,7 +65,7 @@ class _ReportPreviewState extends State<ReportPreview> {
             pw.SizedBox(height: 10),
 
             // Loop through the rooms and activities from the homestay details
-            ...(homestayDetails['rooms']?.map((room) {
+            ...(homestayDetails['Rooms']?.map((room) {
               return pw.Column(
                 children: [
                   pw.Text('Room Type: ${room['roomType'] ?? 'Unknown'}',

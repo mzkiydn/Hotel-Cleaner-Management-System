@@ -78,7 +78,7 @@ class _ReportDetailState extends State<ReportDetail> {
     }
 
     return BaseScaffold(
-      customBarTitle: homestayDetails['houseName'] ?? 'Report Details',  // Access houseName correctly
+      customBarTitle: homestayDetails['House Name'] ?? 'Report Details',  // Access houseName correctly
       leftCustomBarAction: IconButton(
         icon: const Icon(Icons.arrow_left, color: Colors.white),
         onPressed: () {
@@ -91,19 +91,19 @@ class _ReportDetailState extends State<ReportDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // House name and session date
-            Text('Homestay: ${homestayDetails['houseName']}', style: const TextStyle(fontSize: 18)),
+            Text('Homestay: ${homestayDetails['House Name']}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text('Date: ${widget.report.sessionDate}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text('Status: ${bookingDetails['bookingStatus']}', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Status: ${widget.report.bookingId}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
 
             // House description
             Text('House Description:', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('Number of rooms: ${homestayDetails['rooms']?.length ?? 0}', style: const TextStyle(fontSize: 16)),
+            Text('House Type: ${homestayDetails['House Type']}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Number of rooms: ${homestayDetails['Rooms']?.length ?? 0}', style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 8),
 
             // Displaying room details and activities
@@ -112,9 +112,9 @@ class _ReportDetailState extends State<ReportDetail> {
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: homestayDetails['rooms']?.length ?? 0,
+              itemCount: homestayDetails['Rooms']?.length ?? 0,
               itemBuilder: (context, index) {
-                var room = homestayDetails['rooms'][index];
+                var room = homestayDetails['Rooms'][index];
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
