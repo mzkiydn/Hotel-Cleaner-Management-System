@@ -124,11 +124,10 @@ class ReportController {
     return reportList;
   }
 
-
   // Get homestay details by homestayId
   Future<Map<String, dynamic>> getHomestay(String homestayId) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('homestays')
+        .collection('Homestays')
         .doc(homestayId)
         .get();
 

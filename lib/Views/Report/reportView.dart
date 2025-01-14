@@ -32,13 +32,8 @@ class _ReportViewState extends State<ReportView> {
 
   Future<void> _fetchReports() async {
     try {
-      print('Fetching reports needing approval...'); // Debug statement
       List<Report> needingApproval = await _reportController.getBookingsNeedingApproval();
-      print('Reports needing approval: ${needingApproval.length}'); // Debug statement
-
-      print('Fetching approved reports...'); // Debug statement
       List<Report> approved = await _reportController.getApprovedBookings();
-      print('Approved reports: ${approved.length}'); // Debug statement
 
       setState(() {
         reportsNeedingApproval = needingApproval;
