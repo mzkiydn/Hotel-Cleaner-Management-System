@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Report {
   final String userId;
   final String cleanerId;
-  final String homestayId;
+  final String homestayID;
   final String bookingId;
   final String sessionDate;
   final double price;
@@ -14,7 +14,7 @@ class Report {
   Report({
     required this.userId,
     required this.cleanerId,
-    required this.homestayId,
+    required this.homestayID,
     required this.bookingId,
     required this.sessionDate,
     required this.price,
@@ -28,7 +28,7 @@ class Report {
     return {
       'userId': userId,
       'cleanerId': cleanerId,
-      'homestayId': homestayId,
+      'homestayID': homestayID,
       'bookingId': bookingId,
       'sessionDate': sessionDate,
       'price': price,
@@ -43,7 +43,7 @@ class Report {
     return Report(
       userId: map['userId'],
       cleanerId: map['cleanerId'],
-      homestayId: map['homestayId'],
+      homestayID: map['homestayID'],
       bookingId: map['bookingId'],
       sessionDate: map['sessionDate'],
       price: map['price'],

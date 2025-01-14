@@ -28,7 +28,7 @@ class _ReportPreviewState extends State<ReportPreview> {
   // Fetch homestay and booking details
   Future<void> _fetchHomestayDetails() async {
     // Use widget.report.homestayId to fetch details from the controller
-    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report.homestayId);
+    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report.homestayID);
     Map<String, dynamic> booking = await _reportController.getBooking(widget.report.bookingId);
 
     setState(() {

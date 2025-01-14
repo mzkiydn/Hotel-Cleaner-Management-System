@@ -1,4 +1,3 @@
-import 'package:hcms_sep/Domain/Booking.dart';
 import 'package:hcms_sep/Domain/Report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -87,43 +86,44 @@ class ReportController {
     List<Report> reportList = [];
 
     for (var doc in booking.docs) {
+      String bookingId = doc.id; // This is the booking ID
       Map<String, dynamic> bookingData = doc.data() as Map<String, dynamic>;
-      print('Booking data: $bookingData'); // Debug statement
 
-      final homestayDetails = await getHomestay(bookingData['homestayId']);
-      print('Homestay details: $homestayDetails'); // Debug statement
+      final homestayDetails = await getHomestay(bookingData['homestayID']);
 
-      if (homestayDetails.isNotEmpty) {
-        String activities = homestayDetails['activities'].values
+        String activities = homestayDetails['activities'] != null
+            ? homestayDetails['activities'].values
             .expand((activityList) => (activityList as List<dynamic>).cast<String>())
-            .join(", ");
+            .join(", ")
+            : 'No activities listed';
 
         Report report = Report(
           userId: bookingData['userId'],
           cleanerId: bookingData['cleanerId'],
-          homestayId: bookingData['homestayId'],
-          bookingId: bookingData['bookingId'],
+          homestayID: bookingData['homestayID'],
+          bookingId: bookingId,
           sessionDate: bookingData['sessionDate'],
           price: (bookingData['price'] as num).toDouble(), // Convert price to double
           activities: activities,
-          rooms: homestayDetails['rooms'].length,
+          rooms: homestayDetails['rooms']?.length ?? 0, // Default to 0 if rooms is null
           description: 'Session Date: ${bookingData['sessionDate']}\n'
               'Price: \$${bookingData['price']}\n'
               'Activities: $activities\n'
-              'Rooms: ${homestayDetails['rooms'].length} rooms\n'
+              'Rooms: ${homestayDetails['rooms']?.length ?? 0} rooms\n'
               'User ID: ${bookingData['userId']}\n'
               'Cleaner ID: ${bookingData['cleanerId']}\n'
               'Booking ID: ${bookingData['bookingId']}\n'
-              'Homestay ID: ${bookingData['homestayId']}',
+              'Homestay ID: ${bookingData['homestayID']}',
         );
 
         reportList.add(report);
         await createReport(report);
-      }
     }
+
     print('Total reports processed: ${reportList.length}'); // Debug statement
     return reportList;
   }
+
 
   // Get homestay details by homestayId
   Future<Map<String, dynamic>> getHomestay(String homestayId) async {
@@ -142,13 +142,12 @@ class ReportController {
         List<String> activities = List<String>.from(room['activities']);
         activitiesByRoom[roomType] = activities;
       }
-
       return {
-
         "houseName": data['houseName'] ?? 'Unknown Homestay', // Ensure houseName is included
         "activities": activitiesByRoom,
         "rooms": rooms,
       };
+
     } else {
       return {}; // Return an empty map if homestay not found
     }
@@ -174,8 +173,19 @@ class ReportController {
   // Create a new report entry in Firestore
   Future<void> createReport(Report report) async {
     try {
-      await FirebaseFirestore.instance.collection('Report').add(report.toMap());
-      print('Report created successfully');
+      // Check if a report for this booking already exists
+      QuerySnapshot existingReport = await FirebaseFirestore.instance
+          .collection('Report')
+          .where('bookingId', isEqualTo: report.bookingId)
+          .get();
+
+      if (existingReport.docs.isEmpty) {
+        // No existing report found, so create a new one
+        await FirebaseFirestore.instance.collection('Report').add(report.toMap());
+        print('Report created successfully for bookingId: ${report.bookingId}');
+      } else {
+        print('Report already exists for bookingId: ${report.bookingId}');
+      }
     } catch (e) {
       print('Error creating report: $e');
     }

@@ -91,16 +91,14 @@ class _ReportViewState extends State<ReportView> {
         final report = reports[index];
 
         return FutureBuilder<Map<String, dynamic>>(
-          future: _reportController.getHomestay(report.homestayId), // Use the controller to fetch homestay details
+          future: _reportController.getHomestay(report.homestayID), // Use the controller to fetch homestay details
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              print('Loading homestay details for report...'); // Debug statement
               return ListTile(
                 title: Text('Loading...'),
                 trailing: Text(report.sessionDate),
               );
             } else if (snapshot.hasError) {
-              print('Error loading homestay details: ${snapshot.error}'); // Debug statement
               return ListTile(
                 title: Text('Error loading homestay name'),
                 trailing: Text(report.sessionDate),
@@ -109,8 +107,14 @@ class _ReportViewState extends State<ReportView> {
               String homestayName = snapshot.data!['houseName'] ?? 'Unknown Homestay';
               return ListTile(
                 title: Text(homestayName),
-                subtitle: Text(report.description),
                 trailing: Text(report.sessionDate),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/reportDetail',
+                    arguments: report,
+                  );
+                },
               );
             } else {
               return ListTile(
@@ -126,4 +130,5 @@ class _ReportViewState extends State<ReportView> {
       },
     );
   }
+
 }

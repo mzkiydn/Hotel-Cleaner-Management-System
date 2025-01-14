@@ -44,10 +44,10 @@ class _ReportDetailState extends State<ReportDetail> {
     });
 
     // Fetch homestay details using the report's 'homestayId'
-    Map<String, dynamic> booking = await _reportController.getHomestay(widget.report.homestayId);
+    Map<String, dynamic> booking = await _reportController.getBooking(widget.report.bookingId);
 
     // Fetch homestay details using the report's 'homestayId'
-    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report.homestayId);
+    Map<String, dynamic> homestay = await _reportController.getHomestay(widget.report.homestayID);
     setState(() {
       homestayDetails = homestay;
       bookingDetails = booking;
@@ -96,6 +96,8 @@ class _ReportDetailState extends State<ReportDetail> {
             Text('Date: ${widget.report.sessionDate}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text('Status: ${bookingDetails['bookingStatus']}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Status: ${widget.report.bookingId}', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
 
             // House description
@@ -136,7 +138,7 @@ class _ReportDetailState extends State<ReportDetail> {
               ),
 
             // Print button for approved reports
-            if (bookingDetails['bookingStatus'] == 'Approved' || bookingDetails['bookingStatus'] == 'Paid')  // Access status correctly
+            if (bookingDetails['bookingStatus'] == 'Approved')  // Access status correctly
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
