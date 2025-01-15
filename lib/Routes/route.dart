@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hcms_sep/Domain/Report.dart';
+import 'package:hcms_sep/Views/Booking/BookingForm.dart';
 import 'package:hcms_sep/Views/Register/homestayRegistration.dart';
 import 'package:hcms_sep/Views/Register/loginInterface.dart';
 import 'package:hcms_sep/Views/Register/registerInterface.dart';
@@ -10,11 +11,14 @@ import 'package:hcms_sep/Views/Activity/activityListView.dart';
 import 'package:hcms_sep/Views/Activity/activityUpdateView.dart';
 //import 'package:hcms_sep/Views/Activity/bookingListView.dart';
 import 'package:hcms_sep/Views/Activity/bookingRescheduleView.dart';
-import 'package:hcms_sep/Views/Booking/BookingForm.dart';
+import 'package:hcms_sep/Views/Booking/MyBookingPage.dart';
+import 'package:hcms_sep/Views/Booking/Home.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/home':
+        return MaterialPageRoute(builder: (context) => HomePage());
       case '/login':
         return MaterialPageRoute(builder: (context) => const LoginInterface());
       case '/register':
@@ -22,13 +26,18 @@ class Routes {
       case '/report':
         return MaterialPageRoute(builder: (context) => ReportView());
       case '/activity':
-        return MaterialPageRoute(builder: (context) => const ActivityListView());
+        return MaterialPageRoute(
+            builder: (context) => const ActivityListView());
       case '/update':
-        return MaterialPageRoute(builder: (context) => const ActivityUpdateView());
+        return MaterialPageRoute(
+            builder: (context) => const ActivityUpdateView());
       case '/booking':
+        return MaterialPageRoute(builder: (context) => MyBookingPage());
+      case '/bookingForm':
         return MaterialPageRoute(builder: (context) => const BookingForm());
       case '/reschedule':
-        return MaterialPageRoute(builder: (context) => const BookingRescheduleView());
+        return MaterialPageRoute(
+            builder: (context) => const BookingRescheduleView());
       case '/homeregister':
         return MaterialPageRoute(builder: (context) => HomestayRegistration());
       case '/reportDetail':

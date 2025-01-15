@@ -7,6 +7,7 @@ class Booking {
   final String? cleanerId; // Cleaner ID will be null initially
   final String userId; // User ID of the person who made the booking
   final String address; // Add address field
+  final String homestayID;
 
   Booking({
     required this.sessionDate,
@@ -17,6 +18,7 @@ class Booking {
     this.cleanerId,
     required this.userId,
     required this.address, // Include address in the constructor
+    this.homestayID = "c7K5yQH58zNUabT2AZcD",
   });
 
   // Convert the Booking object to a Map to store in Firestore
@@ -30,6 +32,7 @@ class Booking {
       'cleanerId': cleanerId ?? '', // Default empty if no cleaner is assigned
       'userId': userId,
       'address': address, // Store address in Firestore
+      'homestayID': homestayID,
     };
   }
 
@@ -44,6 +47,7 @@ class Booking {
       cleanerId: map['cleanerId'],
       userId: map['userId'],
       address: map['address'], // Convert address from Firestore
+      homestayID: map['homestayID'],
     );
   }
 }

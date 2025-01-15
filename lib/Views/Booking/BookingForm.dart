@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hcms_sep/Domain/Booking.dart';
 import 'package:hcms_sep/Provider/BookingController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'MyBookingPage.dart'; // Import MyBookingPage
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -76,7 +77,7 @@ class _BookingFormState extends State<BookingForm> {
 
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
-      // Create the booking object,
+      // Create the booking object
       Booking booking = Booking(
         sessionDate: _dateController.text,
         sessionTime: _timeController.text,
@@ -96,6 +97,14 @@ class _BookingFormState extends State<BookingForm> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Booking Submitted!')),
+        );
+
+        // Navigate to MyBookingPage after a successful booking
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  MyBookingPage()), // Your MyBookingPage widget
         );
       }
     }

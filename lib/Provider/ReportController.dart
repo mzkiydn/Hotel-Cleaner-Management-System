@@ -20,11 +20,15 @@ class ReportController {
 
     // Fetch username from Firestore using userId
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('User').doc(userId).get();
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('User').doc(userId).get();
 
       if (userDoc.exists) {
         String username = userDoc.get('Username') ?? 'Unknown';
-        return {'username': username, 'sessionId': userId}; // Returning userId as sessionId
+        return {
+          'username': username,
+          'sessionId': userId
+        }; // Returning userId as sessionId
       } else {
         return {'username': 'Unknown', 'sessionId': 'Unknown'};
       }
@@ -91,33 +95,37 @@ class ReportController {
 
       final homestayDetails = await getHomestay(bookingData['homestayID']);
 
-        String activities = homestayDetails['activities'] != null
-            ? homestayDetails['activities'].values
-            .expand((activityList) => (activityList as List<dynamic>).cast<String>())
-            .join(", ")
-            : 'No activities listed';
+      String activities = homestayDetails['activities'] != null
+          ? homestayDetails['activities']
+              .values
+              .expand((activityList) =>
+                  (activityList as List<dynamic>).cast<String>())
+              .join(", ")
+          : 'No activities listed';
 
-        Report report = Report(
-          userId: bookingData['userId'],
-          cleanerId: bookingData['cleanerId'],
-          homestayID: bookingData['homestayID'],
-          bookingId: bookingId,
-          sessionDate: bookingData['sessionDate'],
-          price: (bookingData['price'] as num).toDouble(), // Convert price to double
-          activities: activities,
-          rooms: homestayDetails['Rooms']?.length ?? 0, // Default to 0 if rooms is null
-          description: 'Session Date: ${bookingData['sessionDate']}\n'
-              'Price: \$${bookingData['price']}\n'
-              'Activities: $activities\n'
-              'Rooms: ${homestayDetails['Rooms']?.length ?? 0} Rooms\n'
-              'User ID: ${bookingData['userId']}\n'
-              'Cleaner ID: ${bookingData['cleanerId']}\n'
-              'Booking ID: ${bookingData['bookingId']}\n'
-              'Homestay ID: ${bookingData['homestayID']}',
-        );
+      Report report = Report(
+        userId: bookingData['userId'],
+        cleanerId: bookingData['cleanerId'],
+        homestayID: bookingData['homestayID'],
+        bookingId: bookingId,
+        sessionDate: bookingData['sessionDate'],
+        price:
+            (bookingData['price'] as num).toDouble(), // Convert price to double
+        activities: activities,
+        rooms: homestayDetails['Rooms']?.length ??
+            0, // Default to 0 if rooms is null
+        description: 'Session Date: ${bookingData['sessionDate']}\n'
+            'Price: \$${bookingData['price']}\n'
+            'Activities: $activities\n'
+            'Rooms: ${homestayDetails['Rooms']?.length ?? 0} Rooms\n'
+            'User ID: ${bookingData['userId']}\n'
+            'Cleaner ID: ${bookingData['cleanerId']}\n'
+            'Booking ID: ${bookingData['bookingId']}\n'
+            'Homestay ID: ${bookingData['homestayID']}',
+      );
 
-        reportList.add(report);
-        await createReport(report);
+      reportList.add(report);
+      await createReport(report);
     }
 
     print('Total reports processed: ${reportList.length}'); // Debug statement
@@ -147,7 +155,6 @@ class ReportController {
         "activities": activitiesByRoom,
         "Rooms": rooms,
       };
-
     } else {
       return {}; // Return an empty map if homestay not found
     }
@@ -181,7 +188,9 @@ class ReportController {
 
       if (existingReport.docs.isEmpty) {
         // No existing report found, so create a new one
-        await FirebaseFirestore.instance.collection('Report').add(report.toMap());
+        await FirebaseFirestore.instance
+            .collection('Report')
+            .add(report.toMap());
         print('Report created successfully for bookingId: ${report.bookingId}');
       } else {
         print('Report already exists for bookingId: ${report.bookingId}');
@@ -194,7 +203,10 @@ class ReportController {
   // Update booking status to approved
   Future<void> updateBookingStatusToApproved(String bookingId) async {
     try {
-      await FirebaseFirestore.instance.collection('bookings').doc(bookingId).update({
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .update({
         'bookingStatus': 'Approved',
       });
       print('Booking status updated to Approved');
@@ -203,4 +215,3 @@ class ReportController {
     }
   }
 }
-
