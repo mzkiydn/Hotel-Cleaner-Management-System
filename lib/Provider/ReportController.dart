@@ -48,7 +48,7 @@ class ReportController {
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .where('bookingStatus', isEqualTo: 'Completed')
         .where('userId', isEqualTo: userId)
         .get();
@@ -71,7 +71,7 @@ class ReportController {
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .where('bookingStatus', isEqualTo: 'Approved')
         .where('userId', isEqualTo: userId)
         .get();
@@ -163,7 +163,7 @@ class ReportController {
   // Get homestay details by homestayId
   Future<Map<String, dynamic>> getBooking(String bookingId) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .doc(bookingId)
         .get();
 
