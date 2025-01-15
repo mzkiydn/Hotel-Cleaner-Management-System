@@ -44,7 +44,7 @@ class ReportController {
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .where('bookingStatus', isEqualTo: 'Completed')
         .where('userId', isEqualTo: userId)
         .get();
@@ -67,7 +67,7 @@ class ReportController {
     }
 
     QuerySnapshot booking = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .where('bookingStatus', isEqualTo: 'Approved')
         .where('userId', isEqualTo: userId)
         .get();
@@ -156,7 +156,7 @@ class ReportController {
   // Get homestay details by homestayId
   Future<Map<String, dynamic>> getBooking(String bookingId) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('bookings')
+        .collection('Booking')
         .doc(bookingId)
         .get();
 
@@ -194,7 +194,7 @@ class ReportController {
   // Update booking status to approved
   Future<void> updateBookingStatusToApproved(String bookingId) async {
     try {
-      await FirebaseFirestore.instance.collection('bookings').doc(bookingId).update({
+      await FirebaseFirestore.instance.collection('Booking').doc(bookingId).update({
         'bookingStatus': 'Approved',
       });
       print('Booking status updated to Approved');
