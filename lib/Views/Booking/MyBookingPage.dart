@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hcms_sep/Provider/BookingController.dart';
 import 'EditBooking.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyBookingPage(),
-    );
-  }
-}
 
 class MyBookingPage extends StatelessWidget {
   @override
@@ -39,11 +28,11 @@ class MyBookingPage extends StatelessWidget {
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            BookingList(statusFilter: ['Pending', 'Confirmed']),
-            BookingList(statusFilter: ['Completed']),
-            BookingList(statusFilter: ['Cancelled']),
+            BookingList(statusFilter: const ['Pending', 'Confirmed']),
+            BookingList(statusFilter: const ['Completed']),
+            BookingList(statusFilter: const ['Cancelled']),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -53,7 +42,6 @@ class MyBookingPage extends StatelessWidget {
           unselectedItemColor: Colors.black54,
           currentIndex: 1, // Set this dynamically if needed
           onTap: (index) {
-            // Handle navigation
             if (index == 0) {
               Navigator.pushNamed(context, '/home');
             } else if (index == 1) {
@@ -96,13 +84,14 @@ class MyBookingPage extends StatelessWidget {
 
 class BookingList extends StatelessWidget {
   final List<String> statusFilter;
+  final BookingController _controller = BookingController();
 
-  const BookingList({required this.statusFilter});
+  BookingList({required this.statusFilter});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('Booking').snapshots(),
+      stream: _controller.getBookings(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -128,10 +117,7 @@ class BookingList extends StatelessWidget {
               children: bookings.map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
                 return FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('Homestays')
-                      .doc(data['homestayID'])
-                      .get(),
+                  future: _controller.getHomestayData(data['homestayID']),
                   builder: (context, homestaySnapshot) {
                     if (homestaySnapshot.connectionState ==
                         ConnectionState.waiting) {
@@ -148,7 +134,7 @@ class BookingList extends StatelessWidget {
                     final houseName = homestayData['House Name'] ?? 'Unknown';
 
                     return FutureBuilder<String?>(
-                      future: _fetchCleanerName(data['cleanerId']),
+                      future: _controller.fetchCleanerName(data['cleanerId']),
                       builder: (context, cleanerSnapshot) {
                         if (cleanerSnapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -177,22 +163,6 @@ class BookingList extends StatelessWidget {
         );
       },
     );
-  }
-
-  // Function to fetch cleaner name from the User collection
-  Future<String?> _fetchCleanerName(String cleanerId) async {
-    final userDoc = await FirebaseFirestore.instance
-        .collection('User')
-        .doc(cleanerId)
-        .get();
-    if (userDoc.exists) {
-      final userData = userDoc.data() as Map<String, dynamic>;
-      final role = userData['Role'];
-      if (role == 'Cleaner') {
-        return userData['Name'];
-      }
-    }
-    return null;
   }
 }
 
@@ -283,8 +253,7 @@ class BookingCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                if (bookingStatus !=
-                    'Cancelled') // Hide button if status is 'Cancelled'
+                if (bookingStatus != 'Cancelled')
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

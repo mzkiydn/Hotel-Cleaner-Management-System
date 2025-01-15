@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hcms_sep/Domain/Booking.dart';
 import 'package:hcms_sep/Provider/BookingController.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'MyBookingPage.dart'; // Import MyBookingPage
+import 'MyBookingPage.dart';
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -25,7 +23,6 @@ class _BookingFormState extends State<BookingForm> {
 
   double? _totalPrice;
 
-  // Controller for handling booking logic
   final BookingController _bookingController = BookingController();
 
   Future<void> _selectDate(BuildContext context) async {
@@ -62,7 +59,7 @@ class _BookingFormState extends State<BookingForm> {
     }
   }
 
-  void _submitBooking() async {
+  Future<void> _submitBooking() async {
     if (_addressController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _timeController.text.isEmpty ||
@@ -75,38 +72,36 @@ class _BookingFormState extends State<BookingForm> {
       return;
     }
 
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      // Create the booking object
-      Booking booking = Booking(
-        sessionDate: _dateController.text,
-        sessionTime: _timeController.text,
-        sessionDuration: _selectedHours!,
-        price: _totalPrice ?? 0.0,
-        userId: userId,
-        address: _addressController.text,
+    final booking = await _bookingController.createBooking(
+      address: _addressController.text,
+      sessionDate: _dateController.text,
+      sessionTime: _timeController.text,
+      sessionDuration: _selectedHours!,
+      price: _totalPrice ?? 0.0,
+    );
+
+    if (booking == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to create booking')),
+      );
+      return;
+    }
+
+    final error = await _bookingController.addBooking(booking);
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking Submitted!')),
       );
 
-      // Call BookingController to add the booking to Firestore
-      String? error = await _bookingController.addBooking(booking);
-
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking Submitted!')),
-        );
-
-        // Navigate to MyBookingPage after a successful booking
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  MyBookingPage()), // Your MyBookingPage widget
-        );
-      }
+      // Navigate to MyBookingPage after a successful booking
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyBookingPage()),
+      );
     }
   }
 
@@ -133,7 +128,6 @@ class _BookingFormState extends State<BookingForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Address Section
             const Text(
               'Address',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -147,8 +141,6 @@ class _BookingFormState extends State<BookingForm> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Session's Date Section
             const Text(
               "Session's date",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -176,8 +168,6 @@ class _BookingFormState extends State<BookingForm> {
               ),
             ),
             const SizedBox(height: 8),
-
-            // Dropdown to select hours
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -194,12 +184,10 @@ class _BookingFormState extends State<BookingForm> {
                 setState(() {
                   _selectedHours = value;
                 });
-                _calculatePrice(); // Calculate price when hours are selected
+                _calculatePrice();
               },
             ),
             const SizedBox(height: 16),
-
-            // Total Payment Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -212,15 +200,14 @@ class _BookingFormState extends State<BookingForm> {
                       ? 'RM ${_totalPrice!.toStringAsFixed(2)}'
                       : 'RM 0.00',
                   style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-
-            // Proceed Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

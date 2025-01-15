@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:hcms_sep/Provider/BookingController.dart';
 
 class EditBooking extends StatefulWidget {
   final String bookingId;
@@ -12,13 +12,14 @@ class EditBooking extends StatefulWidget {
 }
 
 class _EditBookingState extends State<EditBooking> {
+  final BookingController _controller = BookingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
 
   String address = "";
   String sessionDuration = "";
   String totalPayment = "";
-  String paymentMethod = "Debit Card";
+  String paymentMethod = "";
 
   @override
   void initState() {
@@ -27,71 +28,53 @@ class _EditBookingState extends State<EditBooking> {
   }
 
   Future<void> _fetchBookingDetails() async {
-    try {
-      DocumentSnapshot bookingSnapshot = await FirebaseFirestore.instance
-          .collection('Booking')
-          .doc(widget.bookingId)
-          .get();
-
-      if (bookingSnapshot.exists) {
-        Map<String, dynamic> bookingData =
-            bookingSnapshot.data() as Map<String, dynamic>;
-
-        setState(() {
-          address = bookingData['address'] ?? "N/A";
-          sessionDuration = bookingData['sessionDuration'] ?? "N/A";
-          totalPayment = bookingData['price']?.toString() ?? "N/A";
-          _dateController.text = bookingData['sessionDate'];
-          _timeController.text = bookingData['sessionTime'];
-        });
-      }
-    } catch (e) {
-      print('Error fetching booking details: $e');
+    final booking = await _controller.fetchBookingDetails(widget.bookingId);
+    if (booking != null) {
+      setState(() {
+        address = booking.address;
+        sessionDuration = booking.sessionDuration;
+        totalPayment = booking.price.toString();
+        paymentMethod = booking.paymentMethod;
+        _dateController.text = booking.sessionDate;
+        _timeController.text = booking.sessionTime;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load booking details')),
+      );
     }
   }
 
   Future<void> _updateBookingDetails() async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('Booking')
-          .doc(widget.bookingId)
-          .update({
-        'sessionDate': _dateController.text,
-        'sessionTime': _timeController.text,
-      });
-
+    final error = await _controller.updateBookingDetails(
+      widget.bookingId,
+      _dateController.text,
+      _timeController.text,
+    );
+    if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Booking updated successfully')),
       );
-
       Navigator.pop(context);
-    } catch (e) {
-      print('Error updating booking: $e');
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update booking')),
+        SnackBar(content: Text(error)),
       );
     }
   }
 
   Future<void> _cancelBooking() async {
     final bool confirm = await _showConfirmationDialog();
-
     if (confirm) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('Booking')
-            .doc(widget.bookingId)
-            .update({'bookingStatus': 'Cancelled'});
-
+      final error = await _controller.cancelBooking(widget.bookingId);
+      if (error == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Booking canceled successfully')),
         );
-
         Navigator.pop(context);
-      } catch (e) {
-        print('Error canceling booking: $e');
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to cancel booking')),
+          SnackBar(content: Text(error)),
         );
       }
     }
@@ -129,11 +112,18 @@ class _EditBookingState extends State<EditBooking> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Booking'),
-        centerTitle: true, // Ensure the title is properly centered
+        title: const Text(
+          'Edit Booking',
+          style: TextStyle(color: Colors.white), // Set the text color to white
+        ),
+        centerTitle: true,
         backgroundColor: Colors.deepPurple,
-        foregroundColor: Colors.white,
-        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context); // Handle back navigation
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -168,11 +158,10 @@ class _EditBookingState extends State<EditBooking> {
                   firstDate: DateTime.now(),
                   lastDate: DateTime(2100),
                 );
-
                 if (pickedDate != null) {
                   setState(() {
                     _dateController.text =
-                        DateFormat('yyyy-M-dd').format(pickedDate);
+                        DateFormat('yyyy-MM-dd').format(pickedDate);
                   });
                 }
               },
@@ -193,15 +182,9 @@ class _EditBookingState extends State<EditBooking> {
                   context: context,
                   initialTime: TimeOfDay.now(),
                 );
-
                 if (pickedTime != null) {
-                  final now = DateTime.now();
-                  final formattedTime = DateFormat('hh:mm a').format(
-                    DateTime(now.year, now.month, now.day, pickedTime.hour,
-                        pickedTime.minute),
-                  );
                   setState(() {
-                    _timeController.text = formattedTime;
+                    _timeController.text = pickedTime.format(context);
                   });
                 }
               },
@@ -212,12 +195,11 @@ class _EditBookingState extends State<EditBooking> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text("Session duration: $sessionDuration"),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Divider(color: Colors.grey[400]),
             const SizedBox(height: 10),
             Text("Total Payment: RM $totalPayment"),
             Text("Paid With: $paymentMethod"),
-            const SizedBox(height: 30),
           ],
         ),
       ),

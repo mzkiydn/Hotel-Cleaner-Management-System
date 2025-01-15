@@ -4,10 +4,11 @@ class Booking {
   final String sessionDuration;
   final double price;
   final String bookingStatus;
-  final String? cleanerId; // Cleaner ID will be null initially
-  final String userId; // User ID of the person who made the booking
-  final String address; // Add address field
+  final String? cleanerId;
+  final String userId;
+  final String address;
   final String homestayID;
+  final String paymentMethod;
 
   Booking({
     required this.sessionDate,
@@ -17,8 +18,9 @@ class Booking {
     this.bookingStatus = "Pending", // Default to "Pending"
     this.cleanerId,
     required this.userId,
-    required this.address, // Include address in the constructor
+    required this.address,
     this.homestayID = "c7K5yQH58zNUabT2AZcD",
+    this.paymentMethod = "Credit Card",
   });
 
   // Convert the Booking object to a Map to store in Firestore
@@ -33,6 +35,7 @@ class Booking {
       'userId': userId,
       'address': address, // Store address in Firestore
       'homestayID': homestayID,
+      'paymentMethod': paymentMethod,
     };
   }
 
@@ -46,8 +49,9 @@ class Booking {
       bookingStatus: map['bookingStatus'],
       cleanerId: map['cleanerId'],
       userId: map['userId'],
-      address: map['address'], // Convert address from Firestore
+      address: map['address'],
       homestayID: map['homestayID'],
+      paymentMethod: map['paymentMethod'],
     );
   }
 }
