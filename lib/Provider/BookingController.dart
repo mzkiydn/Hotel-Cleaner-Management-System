@@ -23,6 +23,7 @@ class BookingController {
     required String sessionTime,
     required String sessionDuration,
     required double price,
+    required String homestayID,
   }) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -36,20 +37,40 @@ class BookingController {
         price: price,
         userId: userId,
         address: address,
+        homestayID: homestayID, // Include homestayID
       );
     } catch (e) {
       return null; // Failed to create booking
     }
   }
 
+  // Fetch a list of homestays from Firestore
+  Future<List<Map<String, dynamic>>> fetchHomestays() async {
+    try {
+      final snapshot = await _firestore.collection('Homestays').get();
+      return snapshot.docs.map((doc) {
+        return {
+          'homestayID': doc.id,
+          ...doc.data(),
+        };
+      }).toList();
+    } catch (e) {
+      print('Error fetching homestays: $e');
+      return [];
+    }
+  }
+
+  // Get a stream of bookings
   Stream<QuerySnapshot> getBookings() {
     return _firestore.collection('Booking').snapshots();
   }
 
+  // Fetch homestay details by ID
   Future<DocumentSnapshot> getHomestayData(String homestayID) {
     return _firestore.collection('Homestays').doc(homestayID).get();
   }
 
+  // Fetch the cleaner's name
   Future<String?> fetchCleanerName(String? cleanerId) async {
     if (cleanerId == null || cleanerId.isEmpty) {
       return null;
@@ -65,6 +86,7 @@ class BookingController {
     return null;
   }
 
+  // Fetch booking details by booking ID
   Future<Booking?> fetchBookingDetails(String bookingId) async {
     try {
       final bookingSnapshot =
@@ -78,6 +100,7 @@ class BookingController {
     return null;
   }
 
+  // Update booking details
   Future<String?> updateBookingDetails(
       String bookingId, String date, String time) async {
     try {
@@ -91,6 +114,7 @@ class BookingController {
     }
   }
 
+  // Cancel a booking
   Future<String?> cancelBooking(String bookingId) async {
     try {
       await _firestore.collection('Booking').doc(bookingId).update({
