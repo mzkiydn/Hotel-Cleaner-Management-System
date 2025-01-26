@@ -70,9 +70,9 @@ class _ReportPreviewState extends State<ReportPreview> {
                 children: [
                   pw.Text('Room Type: ${room['roomType'] ?? 'Unknown'}',
                       style: pw.TextStyle(fontSize: 14)),
-                  pw.SizedBox(height: 4),
-                  pw.Text('Activities: ${room['activities']?.join(', ') ?? 'No activities'}',
-                      style: pw.TextStyle(fontSize: 14)),
+                  // pw.SizedBox(height: 4),
+                  // pw.Text('Activities: ${room['activities']?.join(', ') ?? 'No activities'}',
+                  //     style: pw.TextStyle(fontSize: 14)),
                   pw.SizedBox(height: 10),
                 ],
               );

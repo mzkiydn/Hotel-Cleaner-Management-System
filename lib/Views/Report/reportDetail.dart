@@ -120,15 +120,15 @@ class _ReportDetailState extends State<ReportDetail> {
                   children: [
                     Text('Room Type: ${room['roomType']}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 4),
-                    Text('Activities: ${room['activities'].join(', ')}', style: const TextStyle(fontSize: 14)),
-                    const SizedBox(height: 8),
+                    // Text('Activities: ${room['activities'].join(', ')}', style: const TextStyle(fontSize: 14)),
+                    // const SizedBox(height: 8),
                   ],
                 );
               },
             ),
 
             // Approve button
-            if (bookingDetails['bookingStatus'] == 'Completed')  // Access status correctly
+            if (bookingDetails['bookingStatus'] == 'Pending')  // Access status correctly
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
@@ -138,7 +138,7 @@ class _ReportDetailState extends State<ReportDetail> {
               ),
 
             // Print button for approved reports
-            if (bookingDetails['bookingStatus'] == 'Approved')  // Access status correctly
+            if (bookingDetails['bookingStatus'] == 'Confirmed')  // Access status correctly
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(

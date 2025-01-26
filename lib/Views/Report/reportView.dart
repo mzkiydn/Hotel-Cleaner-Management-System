@@ -51,10 +51,10 @@ class _ReportViewState extends State<ReportView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildSectionTitle("Needing Approval"),
+            _buildSectionTitle("Pending Booking"),
             _buildReportList(reportsNeedingApproval),
 
-            _buildSectionTitle("Approved"),
+            _buildSectionTitle("Confirmed Booking"),
             _buildReportList(approvedReports),
           ],
         ),

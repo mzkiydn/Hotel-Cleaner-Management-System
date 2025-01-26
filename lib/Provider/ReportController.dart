@@ -45,12 +45,12 @@ class ReportController {
 
     QuerySnapshot booking = await FirebaseFirestore.instance
         .collection('Booking')
-        .where('bookingStatus', isEqualTo: 'Completed')
+        .where('bookingStatus', isEqualTo: 'Pending')
         .where('userId', isEqualTo: userId)
         .get();
 
     if (booking.docs.isEmpty) {
-      print('No Booking Made Yet');
+      print('No Booking ');
       return []; // Return an empty list
     }
 
@@ -68,7 +68,7 @@ class ReportController {
 
     QuerySnapshot booking = await FirebaseFirestore.instance
         .collection('Booking')
-        .where('bookingStatus', isEqualTo: 'Approved')
+        .where('bookingStatus', isEqualTo: 'Confirmed')
         .where('userId', isEqualTo: userId)
         .get();
 
@@ -135,16 +135,16 @@ class ReportController {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       List<dynamic> rooms = data['Rooms'] ?? [];
 
-      Map<String, List<String>> activitiesByRoom = {};
-      for (var room in rooms) {
-        String roomType = room['roomType'];
-        List<String> activities = List<String>.from(room['activities']);
-        activitiesByRoom[roomType] = activities;
-      }
+      // Map<String, List<String>> activitiesByRoom = {};
+      // for (var room in rooms) {
+      //   String roomType = room['roomType'];
+      //   List<String> activities = List<String>.from(room['activities']);
+      //   activitiesByRoom[roomType] = activities;
+      // }
       return {
         "House Name": data['House Name'] ?? 'Unknown Homestay',
         "House Type": data['House Type'] ?? 'Unknown Type',
-        "activities": activitiesByRoom,
+        // "activities": activitiesByRoom,
         "Rooms": rooms,
       };
 
@@ -195,7 +195,7 @@ class ReportController {
   Future<void> updateBookingStatusToApproved(String bookingId) async {
     try {
       await FirebaseFirestore.instance.collection('Booking').doc(bookingId).update({
-        'bookingStatus': 'Approved',
+        'bookingStatus': 'Completed',
       });
       print('Booking status updated to Approved');
     } catch (e) {
