@@ -4,22 +4,25 @@ class Booking {
   final String sessionDuration;
   final double price;
   final String bookingStatus;
-  final String? cleanerId; // Cleaner ID will be null initially
-  final String userId; // User ID of the person who made the booking
-  final String address; // Add address field
+  final String? cleanerId;
+  final String userId;
+  final String address;
+  final String homestayID;
+  final String paymentMethod;
 
   Booking({
     required this.sessionDate,
     required this.sessionTime,
     required this.sessionDuration,
     required this.price,
-    this.bookingStatus = "Pending", // Default to "Pending"
+    this.bookingStatus = "Pending",
     this.cleanerId,
     required this.userId,
-    required this.address, // Include address in the constructor
+    required this.address,
+    required this.homestayID, // Make required
+    this.paymentMethod = "Credit Card",
   });
 
-  // Convert the Booking object to a Map to store in Firestore
   Map<String, dynamic> toMap() {
     return {
       'sessionDate': sessionDate,
@@ -27,13 +30,14 @@ class Booking {
       'sessionDuration': sessionDuration,
       'price': price,
       'bookingStatus': bookingStatus,
-      'cleanerId': cleanerId ?? '', // Default empty if no cleaner is assigned
+      'cleanerId': cleanerId ?? '',
       'userId': userId,
-      'address': address, // Store address in Firestore
+      'address': address,
+      'homestayID': homestayID, // Ensure it's stored
+      'paymentMethod': paymentMethod,
     };
   }
 
-  // Convert Firestore document to Booking object
   factory Booking.fromMap(Map<String, dynamic> map) {
     return Booking(
       sessionDate: map['sessionDate'],
@@ -43,7 +47,9 @@ class Booking {
       bookingStatus: map['bookingStatus'],
       cleanerId: map['cleanerId'],
       userId: map['userId'],
-      address: map['address'], // Convert address from Firestore
+      address: map['address'],
+      homestayID: map['homestayID'], // Map it back
+      paymentMethod: map['paymentMethod'],
     );
   }
 }

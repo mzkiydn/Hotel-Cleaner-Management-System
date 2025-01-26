@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hcms_sep/Domain/Booking.dart';
 import 'package:hcms_sep/Provider/BookingController.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'MyBookingPage.dart';
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -15,6 +16,7 @@ class _BookingFormState extends State<BookingForm> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   String? _selectedHours;
+  String? _selectedHomestayId; // Store the selected homestay ID
 
   final Map<String, double> fixedRates = {
     '2 hour': 80.0,
@@ -24,7 +26,6 @@ class _BookingFormState extends State<BookingForm> {
 
   double? _totalPrice;
 
-  // Controller for handling booking logic
   final BookingController _bookingController = BookingController();
 
   Future<void> _selectDate(BuildContext context) async {
@@ -61,11 +62,54 @@ class _BookingFormState extends State<BookingForm> {
     }
   }
 
-  void _submitBooking() async {
+  Future<void> _showHomestaysDialog() async {
+    QuerySnapshot homestaysSnapshot =
+        await FirebaseFirestore.instance.collection('Homestays').get();
+
+    if (homestaysSnapshot.docs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No homestays available')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select Homestay'),
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: ListView.builder(
+              itemCount: homestaysSnapshot.docs.length,
+              itemBuilder: (context, index) {
+                final homestay = homestaysSnapshot.docs[index];
+                final homestayData = homestay.data() as Map<String, dynamic>;
+                return ListTile(
+                  title: Text(homestayData['Address']),
+                  onTap: () {
+                    setState(() {
+                      _addressController.text = homestayData['Address'];
+                      _selectedHomestayId = homestay.id;
+                    });
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _submitBooking() async {
     if (_addressController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _timeController.text.isEmpty ||
-        _selectedHours == null) {
+        _selectedHours == null ||
+        _selectedHomestayId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill in all fields!'),
@@ -74,30 +118,47 @@ class _BookingFormState extends State<BookingForm> {
       return;
     }
 
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      // Create the booking object,
-      Booking booking = Booking(
-        sessionDate: _dateController.text,
-        sessionTime: _timeController.text,
-        sessionDuration: _selectedHours!,
-        price: _totalPrice ?? 0.0,
-        userId: userId,
-        address: _addressController.text,
+    final booking = await _bookingController.createBooking(
+      address: _addressController.text,
+      sessionDate: _dateController.text,
+      sessionTime: _timeController.text,
+      sessionDuration: _selectedHours!,
+      price: _totalPrice ?? 0.0,
+      homestayID: '',
+    );
+
+    if (booking == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to create booking')),
+      );
+      return;
+    }
+
+    final updatedBooking = Booking(
+      sessionDate: booking.sessionDate,
+      sessionTime: booking.sessionTime,
+      sessionDuration: booking.sessionDuration,
+      price: booking.price,
+      userId: booking.userId,
+      address: booking.address,
+      homestayID: _selectedHomestayId!,
+    );
+
+    final error = await _bookingController.addBooking(updatedBooking);
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking Submitted!')),
       );
 
-      // Call BookingController to add the booking to Firestore
-      String? error = await _bookingController.addBooking(booking);
-
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking Submitted!')),
-        );
-      }
+      // Navigate to MyBookingPage after a successful booking
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyBookingPage()),
+      );
     }
   }
 
@@ -124,7 +185,6 @@ class _BookingFormState extends State<BookingForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Address Section
             const Text(
               'Address',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -132,14 +192,15 @@ class _BookingFormState extends State<BookingForm> {
             const SizedBox(height: 8),
             TextField(
               controller: _addressController,
+              readOnly: true,
+              onTap: _showHomestaysDialog,
               decoration: const InputDecoration(
-                hintText: 'Add your address',
+                hintText: 'Select a homestay address',
                 border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.search),
               ),
             ),
             const SizedBox(height: 16),
-
-            // Session's Date Section
             const Text(
               "Session's date",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -167,8 +228,6 @@ class _BookingFormState extends State<BookingForm> {
               ),
             ),
             const SizedBox(height: 8),
-
-            // Dropdown to select hours
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -185,12 +244,10 @@ class _BookingFormState extends State<BookingForm> {
                 setState(() {
                   _selectedHours = value;
                 });
-                _calculatePrice(); // Calculate price when hours are selected
+                _calculatePrice();
               },
             ),
             const SizedBox(height: 16),
-
-            // Total Payment Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -203,15 +260,14 @@ class _BookingFormState extends State<BookingForm> {
                       ? 'RM ${_totalPrice!.toStringAsFixed(2)}'
                       : 'RM 0.00',
                   style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-
-            // Proceed Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

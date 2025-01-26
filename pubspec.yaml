@@ -42,6 +42,9 @@ dependencies:
   webview_flutter: ^4.8.0
   printing: ^5.13.4
   pdf: ^3.11.1
+  intl: ^0.20.1
+  dio: ^5.7.0
+  flutter_stripe: ^11.3.0
 
 
 

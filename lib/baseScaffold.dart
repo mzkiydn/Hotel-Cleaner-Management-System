@@ -28,8 +28,10 @@ class BaseScaffold extends StatefulWidget {
 class _BaseScaffoldState extends State<BaseScaffold> {
   Future<void> _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('userId');  // Removes the 'userId' key from SharedPreferences
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);  // Navigate to the login screen
+    await prefs
+        .remove('userId'); // Removes the 'userId' key from SharedPreferences
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/login', (route) => false); // Navigate to the login screen
   }
 
   void _handleNavigation(BuildContext context, int index) {
@@ -61,7 +63,8 @@ class _BaseScaffoldState extends State<BaseScaffold> {
         children: [
           Container(
             color: Colors.blueGrey,
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -85,37 +88,37 @@ class _BaseScaffoldState extends State<BaseScaffold> {
       // Bottom Navigation Bar
       bottomNavigationBar: widget.showBottomNavigationBar
           ? BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.deepPurpleAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: 'Booking',
-            backgroundColor: Colors.deepPurpleAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Activity',
-            backgroundColor: Colors.deepPurpleAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.report),
-            label: 'Report',
-            backgroundColor: Colors.deepPurpleAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Profile',
-            backgroundColor: Colors.deepPurpleAccent,
-          ),
-        ],
-        currentIndex: widget.currentIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: (index) => _handleNavigation(context, index),
-      )
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                  backgroundColor: Colors.deepPurpleAccent,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today),
+                  label: 'Booking',
+                  backgroundColor: Colors.deepPurpleAccent,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Activity',
+                  backgroundColor: Colors.deepPurpleAccent,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.report),
+                  label: 'Report',
+                  backgroundColor: Colors.deepPurpleAccent,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle),
+                  label: 'Profile',
+                  backgroundColor: Colors.deepPurpleAccent,
+                ),
+              ],
+              currentIndex: widget.currentIndex,
+              selectedItemColor: Colors.amber[800],
+              onTap: (index) => _handleNavigation(context, index),
+            )
           : null,
     );
   }
