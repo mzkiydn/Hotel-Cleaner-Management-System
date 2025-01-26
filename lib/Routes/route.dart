@@ -13,6 +13,9 @@ import 'package:hcms_sep/Views/Activity/activityUpdateView.dart';
 import 'package:hcms_sep/Views/Activity/bookingRescheduleView.dart';
 import 'package:hcms_sep/Views/Booking/MyBookingPage.dart';
 import 'package:hcms_sep/Views/Booking/Home.dart';
+import 'package:hcms_sep/Views/Payment/PaymentForm.dart';
+import 'package:hcms_sep/Views/Payment/PaymentDashboardView.dart';
+import 'package:hcms_sep/Views/Payment/PaymentHistoryView.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -50,6 +53,10 @@ class Routes {
         return MaterialPageRoute(
           builder: (context) => ReportPreview(report: report),
         );
+      case '/PaymentForm':
+        return MaterialPageRoute(builder: (context) => const PaymentForm());
+      case '/PaymentDashboard':
+        return MaterialPageRoute(builder: (context) => PaymentDashboard());
       default:
         return MaterialPageRoute(builder: (context) => const LoginInterface());
     }
