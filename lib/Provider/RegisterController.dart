@@ -24,26 +24,28 @@ class RegisterController {
       // After successful registration, add the user to the Firestore
       if (role == 'Cleaner') {
         // Register Cleaner
-        await _firestore.collection('users').doc(userCredential.user?.uid).set({
-          'fullName': fullName,
-          'username': username,
-          'email': email,
-          'phoneNumber': phoneNumber,
-          'address': address,
-          'role': 'Cleaner',
-          'status': 'active',  // Example of additional field
-          'cleaningExperience': 'N/A', // Cleaner-specific field
+        await _firestore.collection('User').doc(userCredential.user?.uid).set({
+          'Name': fullName,
+          'Username': username,
+          'Email': email,
+          'Phone Number': phoneNumber,
+          'Address': address,
+          'Password': password,
+          'Role': 'Cleaner',
+          'Status': 'active',  // Example of additional field
+          'Experience': 'N/A', // Cleaner-specific field
         });
-      } else if (role == 'HouseOwner') {
+      } else if (role == 'House Owner') {
         // Register HouseOwner
-        await _firestore.collection('users').doc(userCredential.user?.uid).set({
-          'fullName': fullName,
-          'username': username,
-          'email': email,
-          'phoneNumber': phoneNumber,
-          'address': address,
-          'role': 'HouseOwner',
-          'status': 'active',  // Example of additional field
+        await _firestore.collection('User').doc(userCredential.user?.uid).set({
+          'Name': fullName,
+          'Username': username,
+          'Email': email,
+          'Phone Number': phoneNumber,
+          'Address': address,
+          'Password': password,
+          'Role': 'House Owner',
+          'Status': 'active',  // Example of additional field
         });
       } else {
         return 'Invalid role selected.';

@@ -19,7 +19,7 @@ class _RegisterInterfaceState extends State<RegisterInterface> {
   final _addressController = TextEditingController();
   String _role = 'Cleaner';
 
-  final List<String> roles = ['Cleaner', 'HouseOwner'];
+  final List<String> roles = ['Cleaner', 'House Owner'];
 
   bool isLoading = false;
 

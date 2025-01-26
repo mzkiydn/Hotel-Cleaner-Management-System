@@ -17,7 +17,7 @@ class BookingController {
       }
 
       // Add booking to the Firestore collection 'bookings'
-      await _firestore.collection('bookings').add(booking.toMap());
+      await _firestore.collection('Booking').add(booking.toMap());
 
       return null; // Booking added successfully
     } catch (e) {

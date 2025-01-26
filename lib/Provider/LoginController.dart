@@ -1,12 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:hcms_sep/Views/Activity/bookingListView.dart';
+import 'package:hcms_sep/Views/Register/homestayRegistration.dart';
+import 'package:hcms_sep/Views/Report/reportView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<String?> loginUser({required String email, required String password}) async {
+  Future<String?> loginUser({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
     try {
       // Attempt to sign in with Firebase Authentication
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -15,35 +24,42 @@ class LoginController {
       );
 
       // Fetch user data from Firestore
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userCredential.user?.uid).get();
+      DocumentSnapshot userDoc = await _firestore.collection('User').doc(userCredential.user?.uid).get();
 
-      if (userDoc.exists) {
-        var userData = userDoc.data() as Map<String, dynamic>;
+      if (!userDoc.exists) return 'User data not found';
 
-        // Check if the account is active
-        if (userData['status'] == 'active') {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          String userId = userCredential.user?.uid ?? '';
-          if (userId.isNotEmpty) {
-            await prefs.setString('userId', userId);
+      var userData = userDoc.data() as Map<String, dynamic>;
 
-            // Check the user's role and perform corresponding logic
-            if (userData['role'] == 'Cleaner') {
-              // Handle logic for Cleaner
-              // You can return or set specific logic based on role if needed
-            } else if (userData['role'] == 'HouseOwner') {
-              // Handle logic for HouseOwner
-            }
-            return null;  // No errors
-          } else {
-            return 'User ID is missing';
-          }
-        } else {
-          return 'User account is not active';
-        }
-      } else {
-        return 'User data not found';
+      // Check if the account is active
+      if (userData['Status']?.toLowerCase() != 'active') {
+        return 'User account is not active';
       }
+
+      String userId = userCredential.user?.uid ?? '';
+      if (userId.isEmpty) return 'User ID is missing';
+
+      // Store userId in SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', userId);
+
+      // Navigate based on Role
+      switch (userData['Role']) {
+        case 'Cleaner':
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => BookingListView()),
+          );
+          break;
+        case 'House Owner':
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ReportView()),
+          );
+          break;
+        default:
+          return 'Unknown role: ${userData['Role']}';
+      }
+      return null; // No errors
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'User not found';
@@ -57,4 +73,3 @@ class LoginController {
     }
   }
 }
-

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hcms_sep/stripe_service.dart';
 import 'Routes/route.dart';
 import 'firebase_options.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  StripeService.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform, // This will use the platform-specific options
   );
@@ -21,10 +19,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
+      onGenerateRoute: Routes.generateRoute,  // Use the custom route generator
       initialRoute: '/login',
-      routes: Routes.routes,
     );
   }
 }

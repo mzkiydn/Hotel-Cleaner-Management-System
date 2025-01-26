@@ -21,7 +21,7 @@ class _MasterScaffoldState extends State<MasterScaffold> {
       // Navigate to Home
         break;
       case 1:
-        Navigator.pushNamed(context, '/booking');
+        Navigator.pushNamed(context, '/home');
         break;
       case 2:
         Navigator.pushNamed(context, '/activity');

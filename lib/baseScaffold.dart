@@ -34,7 +34,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
 
   void _handleNavigation(BuildContext context, int index) {
     if (index == 0) {
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/homelist');
     } else if (index == 1) {
       Navigator.pushNamed(context, '/booking');
     } else if (index == 2) {

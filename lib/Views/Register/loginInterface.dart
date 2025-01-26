@@ -125,9 +125,11 @@ class _LoginInterfaceState extends State<LoginInterface> {
                         isLoading = true;
                       });
 
+                      // Pass context to the controller's loginUser method
                       String? result = await controller.loginUser(
                         email: _emailController.text,
                         password: _passwordController.text,
+                        context: context,  // Pass context here
                       );
 
                       setState(() {
@@ -141,7 +143,7 @@ class _LoginInterfaceState extends State<LoginInterface> {
                             content: Text('Login successful'),
                           ),
                         );
-                        Navigator.pushNamed(context, '/report');
+                        // Navigator.pushNamed(context, '/report');
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -161,6 +163,7 @@ class _LoginInterfaceState extends State<LoginInterface> {
                       ? const CircularProgressIndicator()
                       : const Text('Login'),
                 ),
+
                 const SizedBox(height: 20),
                 // Register Link
                 Row(
